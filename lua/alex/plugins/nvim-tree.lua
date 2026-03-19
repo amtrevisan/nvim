@@ -1,10 +1,11 @@
+-- ╔══════════════════════════════════════════════════════╗
+-- ║    MISTY FOREST — nvim-tree (file explorer)          ║
+-- ╚══════════════════════════════════════════════════════╝
 return {
 	"nvim-tree/nvim-tree.lua",
 	dependencies = "nvim-tree/nvim-web-devicons",
 	config = function()
 		local nvimtree = require("nvim-tree")
-
-		-- required for nvim-tree replacing netrw
 		vim.g.loaded_netrw = 1
 		vim.g.loaded_netrwPlugin = 1
 
@@ -18,8 +19,8 @@ return {
 				icons = {
 					glyphs = {
 						folder = {
-							arrow_closed = "",
-							arrow_open = "",
+							arrow_closed = "",
+							arrow_open = "",
 						},
 					},
 				},
@@ -33,68 +34,54 @@ return {
 			git = { ignore = false },
 		})
 
-		-------------------------------------------------------------------------
-		-- DEVICONS: forest palette
-		-------------------------------------------------------------------------
+		-- ── devicons — forest palette ───────────────────────────
 		local devicons = require("nvim-web-devicons")
 		devicons.set_icon({
-			default = { icon = "", color = "#F4F0F0", name = "Default" }, -- fog-white
-			lua = { icon = "", color = "#A5C0A6", name = "Lua" }, -- sage-300
-			py = { icon = "", color = "#557755", name = "Python" }, -- sage-600
-			md = { icon = "", color = "#FFC966", name = "Markdown" }, -- golden-300
-			js = { icon = "", color = "#C08972", name = "JavaScript" }, -- clay-400
+			default = { icon = "", color = "#D8E8D9", name = "Default" },
+			lua = { icon = "", color = "#A5C8A6", name = "Lua" },
+			py = { icon = "", color = "#7DB87E", name = "Python" },
+			md = { icon = "", color = "#FFC966", name = "Markdown" },
+			js = { icon = "", color = "#D4922A", name = "JavaScript" },
+			cpp = { icon = "", color = "#5AB8B8", name = "Cpp" },
+			hpp = { icon = "", color = "#82C0A8", name = "Hpp" },
+			h = { icon = "", color = "#82C0A8", name = "H" },
+			cmake = { icon = "", color = "#E07848", name = "CMake" },
 		})
 
-		-------------------------------------------------------------------------
-		-- HIGHLIGHTS (forest theme)
-		-- All nvim-tree colors match your wallpaper + Neovim/Tokyonight theme
-		-------------------------------------------------------------------------
+		-- ── highlights ─────────────────────────────────────────
 		local function set_forest_colors()
 			vim.cmd([[
-        " === Core Text Colors ===
-        highlight NvimTreeNormal guibg=none guifg=#F4F0F0      " main text (dust-grey-50)
-        highlight NvimTreeNormalNC guibg=none guifg=#F4F0F0    " inactive tree text
-        highlight NvimTreeFileName guifg=#F4F0F0               " file names
-        highlight NvimTreeFileIcon guifg=#A5C0A6               " file icons (sage-300)
-
-        " === Folder Colors ===
-        highlight NvimTreeFolderName guifg=#A5C0A6             " folder names (sage-300)
-        highlight NvimTreeOpenedFolderName guifg=#557755        " opened folder (sage-600)
-        highlight NvimTreeFolderIcon guifg=#A5C0A6              " folder icon (sage-300)
-
-        " === UI Elements ===
-        highlight NvimTreeEndOfBuffer guibg=none guifg=#151e15  " deep forest shadow
-        highlight NvimTreeVertSplit guibg=none guifg=#3F5A40    " vertical split (sage-700)
-        highlight NvimTreeWinSeparator guibg=none guifg=#3F5A40 " window border (sage-700)
-
-        " === Git Status Colors ===
-        highlight NvimTreeGitDirty  guifg=#FFC966               " modified (golden-300)
-        highlight NvimTreeGitStaged guifg=#6A956B               " staged (sage-500)
-        highlight NvimTreeGitRenamed guifg=#C08972              " renamed (clay-400)
-        highlight NvimTreeGitDeleted guifg=#B16286              " deleted (muted violet accent)
-        highlight NvimTreeGitNew    guifg=#88AA88               " new file (sage-400)
-        highlight NvimTreeGitIgnored guifg=#5A3F3F              " ignored (dust-grey-700)
-
-        " === Executable / Special Files ===
-        highlight NvimTreeExecFile guifg=#FFC966                " executable (golden-300)
-      ]])
+    highlight NvimTreeNormal           guibg=none guifg=#d4ede0
+    highlight NvimTreeNormalNC         guibg=none guifg=#d4ede0
+    highlight NvimTreeFileName         guifg=#d4ede0
+    highlight NvimTreeFileIcon         guifg=#7ab896
+    highlight NvimTreeFolderName       guifg=#7ab896
+    highlight NvimTreeOpenedFolderName guifg=#5ab896
+    highlight NvimTreeFolderIcon       guifg=#5a8c73
+    highlight NvimTreeEndOfBuffer      guibg=none guifg=#0a1410
+    highlight NvimTreeVertSplit        guibg=none guifg=#1e3530
+    highlight NvimTreeWinSeparator     guibg=none guifg=#1e3530
+    highlight NvimTreeGitDirty         guifg=#c8a86b
+    highlight NvimTreeGitStaged        guifg=#5a8c73
+    highlight NvimTreeGitRenamed       guifg=#c87840
+    highlight NvimTreeGitDeleted       guifg=#a85030
+    highlight NvimTreeGitNew           guifg=#7ab896
+    highlight NvimTreeGitIgnored       guifg=#2e4e40
+    highlight NvimTreeExecFile         guifg=#f0d890
+  ]])
 		end
 
 		set_forest_colors()
-
 		vim.api.nvim_create_autocmd("ColorScheme", {
 			pattern = "*",
 			callback = set_forest_colors,
 		})
 
-		-------------------------------------------------------------------------
-		-- KEYMAPS
-		-------------------------------------------------------------------------
-		local keymap = vim.keymap
-
-		keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
-		keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Find file in NvimTree" })
-		keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse all" })
-		keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh NvimTree" })
+		-- ── keymaps ─────────────────────────────────────────────
+		local k = vim.keymap
+		k.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+		k.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Find file in NvimTree" })
+		k.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse all" })
+		k.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh NvimTree" })
 	end,
 }

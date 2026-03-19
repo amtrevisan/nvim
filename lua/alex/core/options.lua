@@ -1,94 +1,81 @@
+-- ╔══════════════════════════════════════════════════════╗
+-- ║   MISTY FOREST — Neovim Core Options                 ║
+-- ╚══════════════════════════════════════════════════════╝
 local opt = vim.opt
 
--- Tabs and indentation
+-- ── Appearance ────────────────────────────────────────
+opt.termguicolors = true
+opt.background = "dark"
+opt.signcolumn = "yes"
+opt.cursorline = true
+
+-- ── Cursor shapes per mode (works in Kitty + most terminals)
+-- Format: blink-on-time/blink-off-time
+-- NORMAL  → blinking block
+-- INSERT  → blinking beam (thin vertical bar)
+-- REPLACE → blinking underline
+opt.guicursor = table.concat({
+	"n-c:block-blinkwait700-blinkon400-blinkoff400",
+	"i-ci:ver25-blinkwait700-blinkon400-blinkoff400",
+	"r-cr:hor20-blinkwait700-blinkon400-blinkoff400",
+	"v:block",
+	"o:hor50",
+}, ",")
+
+-- ── Line numbers ──────────────────────────────────────
+opt.relativenumber = true
+opt.number = true
+
+-- ── Tabs / indentation ────────────────────────────────
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
 
--- Line wrapping
-opt.wrap = false
-
--- Search settings
+-- ── Search ────────────────────────────────────────────
 opt.ignorecase = true
 opt.smartcase = true
+opt.hlsearch = false
+opt.incsearch = true
 
--- Cursor line
-opt.cursorline = true
-
--- Appearance
-opt.number = true
-opt.termguicolors = true
-opt.background = "dark"
-opt.signcolumn = "yes"
-
--- Backspace
-opt.backspace = "indent,eol,start"
-
--- Clipboard
-opt.clipboard:append("unnamedplus")
-
--- Split windows
+-- ── Splits ────────────────────────────────────────────
 opt.splitright = true
 opt.splitbelow = true
 
--- Swapfile
+-- ── Clipboard ─────────────────────────────────────────
+opt.clipboard = "unnamedplus"
+
+-- ── Misc ──────────────────────────────────────────────
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.wrap = false
+opt.fileencoding = "utf-8"
+opt.mouse = "a"
 opt.swapfile = false
+opt.backup = false
+opt.undofile = true
+opt.updatetime = 50
+opt.timeoutlen = 300
 
--- Earthy transparent theme
-local function set_earthy_transparency()
-	vim.cmd([[
-    highlight Normal guibg=none guifg=#D5C4A1
-    highlight NormalNC guibg=none guifg=#D5C4A1
-    highlight SignColumn guibg=none
-    highlight VertSplit guibg=none guifg=#7C6F64
-    highlight StatusLine guibg=none guifg=#EBDBB2
-    highlight StatusLineNC guibg=none guifg=#A89984
-    highlight TabLine guibg=none guifg=#EBDBB2
-    highlight TabLineSel guibg=none guifg=#FABD2F
-    highlight EndOfBuffer guibg=none guifg=#928374
-    highlight MsgArea guibg=none guifg=#D5C4A1
-    highlight Pmenu guibg=none guifg=#D5C4A1
-    highlight PmenuSel guibg=none guifg=#83A598
-    highlight PmenuSbar guibg=none guifg=#504945
-    highlight PmenuThumb guibg=none guifg=#7C6F64
-    highlight Comment guifg=#928374
-    highlight Constant guifg=#B16286
-    highlight Identifier guifg=#98971A
-    highlight Statement guifg=#FB4934
-    highlight Type guifg=#FABD2F
-    highlight Function guifg=#83A598
-    highlight Keyword guifg=#FE8019
-    highlight String guifg=#B8BB26
-  ]])
-end
-
-set_earthy_transparency()
-vim.api.nvim_create_autocmd("ColorScheme", {
-	pattern = "*",
-	callback = set_earthy_transparency,
+-- ── C++ specific ──────────────────────────────────────
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "cpp", "c", "h", "hpp" },
+	callback = function()
+		vim.opt_local.tabstop = 4
+		vim.opt_local.shiftwidth = 4
+		vim.opt_local.expandtab = true
+		vim.opt_local.colorcolumn = "100"
+	end,
 })
+-- Cursor shape per mode (smear-cursor animates transitions)
+vim.opt.guicursor = {
+	"n-v-c:block-Cursor",
+	"i-ci-ve:ver25-CursorInsert",
+	"r-cr:hor20-CursorReplace",
+	"o:hor50",
+	"a:blinkwait0-blinkoff0-blinkon0",
+}
 
--- Toggle transparency
-local transparent_enabled = true
-
-function ToggleTransparency()
-	transparent_enabled = not transparent_enabled
-	if transparent_enabled then
-		set_earthy_transparency()
-		print("Transparency: ON")
-	else
-		vim.cmd([[
-      highlight clear Normal
-      highlight clear NormalNC
-      highlight clear SignColumn
-      highlight clear StatusLine
-      highlight clear StatusLineNC
-      highlight clear TabLine
-      highlight clear TabLineSel
-    ]])
-		print("Transparency: OFF")
-	end
-end
-
-vim.keymap.set("n", "<leader>tt", ToggleTransparency, { desc = "Toggle transparency" })
+vim.api.nvim_set_hl(0, "Cursor", { bg = "#c8a86b", fg = "#0a1410" })
+vim.api.nvim_set_hl(0, "CursorInsert", { bg = "#7ab896", fg = "#0a1410" })
+vim.api.nvim_set_hl(0, "CursorReplace", { bg = "#a85030", fg = "#d4ede0" })

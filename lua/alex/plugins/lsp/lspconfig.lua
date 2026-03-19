@@ -1,3 +1,6 @@
+-- ╔══════════════════════════════════════════════════════╗
+-- ║   MISTY FOREST — LSP (clangd for C++ focus)          ║
+-- ╚══════════════════════════════════════════════════════╝
 return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
@@ -11,14 +14,19 @@ return {
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 		local keymap = vim.keymap
 
-		-- Diagnostics
+		-- ── Diagnostics ──────────────────────────────────────
 		vim.diagnostic.config({
 			virtual_text = false,
 			signs = true,
 			underline = true,
 			update_in_insert = false,
 			severity_sort = true,
-			float = { border = "rounded", source = "always", header = "", prefix = "" },
+			float = {
+				border = "rounded",
+				source = "always",
+				header = "",
+				prefix = "",
+			},
 		})
 
 		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
@@ -27,7 +35,7 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
-		-- LSP keymaps
+		-- ── LSP keymaps ──────────────────────────────────────
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 			callback = function(ev)
@@ -52,7 +60,7 @@ return {
 
 		local capabilities = cmp_nvim_lsp.default_capabilities()
 
-		-- Setup installed servers using new vim.lsp.config API
+		-- ── Server setup ─────────────────────────────────────
 		for _, server_name in ipairs(mason_lspconfig.get_installed_servers()) do
 			local config = {
 				name = server_name,
@@ -70,7 +78,16 @@ return {
 					},
 				}
 			elseif server_name == "clangd" then
-				config.cmd = { "clangd", "--header-insertion=never", "--background-index" }
+				-- ── clangd — tuned for C++20 development ─────────
+				config.cmd = {
+					"clangd",
+					"--header-insertion=never",
+					"--background-index",
+					"--clang-tidy",
+					"--completion-style=detailed",
+					"--function-arg-placeholders",
+					"--fallback-style=llvm",
+				}
 				config.init_options = {
 					usePlaceholders = true,
 					completeUnimported = true,
@@ -78,25 +95,29 @@ return {
 				}
 			end
 
-			-- Register the config
 			vim.lsp.config[server_name] = config
-
-			-- Enable the server
 			vim.lsp.enable(server_name)
 		end
 
-		-- Optional C++ compile & run
+		-- ── C++ compile & run (single file) ──────────────────
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "cpp",
 			callback = function()
+				-- <leader>r  — compile + run in terminal split
 				vim.keymap.set("n", "<leader>r", function()
 					local file = vim.fn.expand("%:p")
 					local output = vim.fn.expand("%:p:r")
-					-- Compile first
-					local compile_cmd = "clang++ -std=c++20 -O2 " .. file .. " -o " .. output
-					-- Run in terminal split
-					vim.cmd("split | terminal " .. compile_cmd .. " && " .. output)
-				end, { buffer = true, desc = "Compile and run C++ file" })
+					local cmd = string.format("clang++ -std=c++20 -O2 -Wall %s -o %s && %s", file, output, output)
+					vim.cmd("split | terminal " .. cmd)
+				end, { buffer = true, desc = "C++: Compile and run" })
+
+				-- <leader>rb — compile only (check errors)
+				vim.keymap.set("n", "<leader>rb", function()
+					local file = vim.fn.expand("%:p")
+					local output = vim.fn.expand("%:p:r")
+					local cmd = string.format("clang++ -std=c++20 -O2 -Wall %s -o %s", file, output)
+					vim.cmd("split | terminal " .. cmd)
+				end, { buffer = true, desc = "C++: Build only" })
 			end,
 		})
 	end,
